@@ -94,7 +94,7 @@ object TTF : UFI
             /**
              * 0x00010000 if (version 1.0)
              */
-            var version: UInt = 0x00010000U,
+            var version: Int = 0x00010000,
             /**
              * set by font manufacturer
              */
@@ -319,7 +319,7 @@ object TTF : UFI
             {
                 fun from(bytes: List<Byte>): HeadTable = HeadTable().apply {
                     val bs = ByteStream(bytes.toByteArray())
-                    version = bs.readU4BE()
+                    version = bs.readS4BE()
                     fontRevision = bs.readU4BE()
                     checkSumAdjustment = bs.readU4BE()
                     magicNumber = bs.readU4BE()
@@ -351,7 +351,7 @@ object TTF : UFI
             /**
              * 0x00010000 (1.0)
              */
-            var version: UInt = 0x00010000U,
+            var version: Int = 0x00010000,
             /**
              * Distance from baseline of highest ascender
              */
@@ -422,7 +422,7 @@ object TTF : UFI
             {
                 fun from(bytes: List<Byte>): HheaTable = HheaTable().apply {
                     val bs = ByteStream(bytes.toByteArray())
-                    version = bs.readU4BE()
+                    version = bs.readS4BE()
                     ascent = bs.readS2BE()
                     descent = bs.readS2BE()
                     lineGap = bs.readS2BE()
@@ -439,6 +439,98 @@ object TTF : UFI
                     reserved3 = bs.readS2BE()
                     metricDataFormat = bs.readS2BE()
                     numOfLongHorMetrics = bs.readU2BE()
+                }
+            }
+        }
+
+        /**
+         * [Maximum Profile Table](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6maxp.html)
+         */
+        data class MaxpTable(
+            /**
+             * 0x00010000 (1.0)
+             */
+            var version: Int = 0x00010000,
+            /**
+             * the number of glyphs in the font
+             */
+            var numGlyphs: UShort = 0U,
+            /**
+             * points in non-compound glyph
+             */
+            var maxPoints: UShort = 0U,
+            /**
+             * contours in non-compound glyph
+             */
+            var maxContours: UShort = 0U,
+            /**
+             * points in compound glyph
+             */
+            var maxComponentPoints: UShort = 0U,
+            /**
+             * contours in compound glyph
+             */
+            var maxComponentContours: UShort = 0U,
+            /**
+             * set to 2
+             */
+            var maxZones: UShort = 2U,
+            /**
+             * points used in Twilight Zone (Z0)
+             */
+            var maxTwilightPoints: UShort = 0U,
+            /**
+             * number of Storage Area locations
+             */
+            var maxStorage: UShort = 0U,
+            /**
+             * number of FDEFs
+             */
+            var maxFunctionDefs: UShort = 0U,
+            /**
+             * number of IDEFs
+             */
+            var maxInstructionDefs: UShort = 0U,
+            /**
+             * maximum stack depth
+             */
+            var maxStackElements: UShort = 0U,
+            /**
+             * byte count for glyph instructions
+             */
+            var maxSizeOfInstructions: UShort = 0U,
+            /**
+             * number of glyphs referenced at top level
+             */
+            var maxComponentElements: UShort = 0U,
+            /**
+             * levels of recursion, set to 0 if font has only simple glyphs
+             */
+            var maxComponentDepth: UShort = 0U,
+        ) : ITable
+        {
+            companion object
+            {
+                fun from(bytes: List<Byte>): MaxpTable = MaxpTable().apply {
+                    val fr = ByteStream(bytes.toByteArray())
+                    version = fr.readS4BE()
+                    numGlyphs = fr.readU2BE()
+                    if (version == 0x00010000)
+                    {
+                        maxPoints = fr.readU2BE()
+                        maxContours = fr.readU2BE()
+                        maxComponentPoints = fr.readU2BE()
+                        maxComponentContours = fr.readU2BE()
+                        maxZones = fr.readU2BE()
+                        maxTwilightPoints = fr.readU2BE()
+                        maxStorage = fr.readU2BE()
+                        maxFunctionDefs = fr.readU2BE()
+                        maxInstructionDefs = fr.readU2BE()
+                        maxStackElements = fr.readU2BE()
+                        maxSizeOfInstructions = fr.readU2BE()
+                        maxComponentElements = fr.readU2BE()
+                        maxComponentDepth = fr.readU2BE()
+                    }
                 }
             }
         }
@@ -527,6 +619,7 @@ object TTF : UFI
             {
                 Struct.PredefinedTable.HEAD -> Struct.HeadTable.from(tableBytes)
                 Struct.PredefinedTable.HHEA -> Struct.HheaTable.from(tableBytes)
+                Struct.PredefinedTable.MAXP -> Struct.MaxpTable.from(tableBytes)
                 else -> Struct.CommonTable(tableBytes)
             }
         }
@@ -536,5 +629,4 @@ object TTF : UFI
     {
         TODO("Not yet implemented")
     }
-
 }
