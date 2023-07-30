@@ -139,30 +139,113 @@ object TTF : UFI
              * range from 64 to 16384
              */
             var unitsPerEm: UShort = 64U,
+            /**
+             * international date
+             */
             var created: ULong = 0U,
+            /**
+             * international date
+             */
             var modified: ULong = 0U,
+            /**
+             * for all glyph bounding boxes
+             */
             var xMin: Short = 0,
+            /**
+             * for all glyph bounding boxes
+             */
             var yMin: Short = 0,
+            /**
+             * for all glyph bounding boxes
+             */
             var xMax: Short = 0,
+            /**
+             * for all glyph bounding boxes
+             */
             var yMax: Short = 0,
+            /**
+             * bit 0 bold
+             *
+             * bit 1 italic
+             *
+             * bit 2 underline
+             *
+             * bit 3 outline
+             *
+             * bit 4 shadow
+             *
+             * bit 5 condensed (narrow)
+             *
+             * bit 6 extended
+             */
             var macStyle: MacStyle = MacStyle(),
+            /**
+             * smallest readable size in pixels
+             */
             var lowestRecPPEM: UShort = 0U,
+            /**
+             * 0 Mixed directional glyphs
+             *
+             * 1 Only strongly left to right glyphs
+             *
+             * 2 Like 1 but also contains neutrals
+             *
+             * -1 Only strongly right to left glyphs
+             *
+             * -2 Like -1 but also contains neutrals
+             */
             var fontDirectionHint: FontDirectionHint = FontDirectionHint.StrongLTR,
+            /**
+             * 0 for short offsets, 1 for long
+             */
             var indexToLocFormat: IndexToLocFormat = IndexToLocFormat.ShortOffset,
+            /**
+             * 0 for current format
+             */
             var glyphDataFormat: Short = 0
         ) : ITable
         {
             data class Flags(
+                /**
+                 * bit 0 - y value of 0 specifies baseline
+                 */
                 var yValueOf0SpecifiesBaseline: Boolean = false, /* 0 */
+                /**
+                 * bit 1 - x position of left most black bit is LSB
+                 */
                 var xPositionOfLeftMostBlackBitIsLsb: Boolean = false, /* 1 */
+                /**
+                 * bit 2 - scaled point size and actual point size will differ (i.e. 24 point glyph differs from 12 point glyph scaled by factor of 2)
+                 */
                 var scaledPointSizeAndActualPointSizeDiffer: Boolean = false, /* 2 */
+                /**
+                 * bit 3 - use integer scaling instead of fractional
+                 */
                 var useIntegerScalingInsteadOfFractional: Boolean = false, /* 3 */
 //                var microsoftImplement: Boolean = false, /* 4 */
+                /**
+                 * bit 5 - This bit should be set in fonts that are intended to e laid out vertically, and in which the glyphs have been drawn such that an x-coordinate of 0 corresponds to the desired vertical baseline.
+                 */
                 var layoutVertically: Boolean = false, /* 5 */
+                /**
+                 * bit 7 - This bit should be set if the font requires layout for correct linguistic rendering (e.g. Arabic fonts).
+                 */
                 var requiresLayoutForCorrectLinguisticRendering: Boolean = false, /* 7 */
+                /**
+                 * bit 8 - This bit should be set for an AAT font which has one or more metamorphosis effects designated as happening by default.
+                 */
                 var aatFontWhichHaveMetamorphosisEffects: Boolean = false, /* 8 */
+                /**
+                 * bit 9 - This bit should be set if the font contains any strong right-to-left glyphs.
+                 */
                 var containsStrongRtlGlyphs: Boolean = false, /* 9 */
+                /**
+                 * bit 10 - This bit should be set if the font contains Indic-style rearrangement effects.
+                 */
                 var containsIndicStyleRearrangementEffects: Boolean = false, /* 10 */
+                /**
+                 * bit 14 - This bit should be set if the glyphs in the font are simply generic symbols for code point ranges, such as for a last resort font.
+                 */
                 var glyphsAreSimplyGenericSymbolsForCodePointRanges: Boolean = false /* 14 */
             )
             {
