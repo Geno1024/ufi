@@ -25,4 +25,7 @@ class ByteStream(var d: ByteArray)
     fun readU8BE() = (((d[ptr++].toUByte().toInt() shl 24) + (d[ptr++].toUByte().toInt() shl 16) + (d[ptr++].toUByte().toInt() shl 8) + d[ptr++].toUByte().toInt()) * 0x100000000 + (d[ptr++].toUByte().toInt() shl 24) + (d[ptr++].toUByte().toInt() shl 16) + (d[ptr++].toUByte().toInt() shl 8) + d[ptr++].toUByte().toInt()).toULong()
 
     fun readC4() = d[ptr++].toInt().toChar().toString() + d[ptr++].toInt().toChar().toString() + d[ptr++].toInt().toChar().toString() + d[ptr++].toInt().toChar().toString()
+
+    fun range(from: Int, to: Int) = d.slice(from..to)
+    fun range(from: UInt, to: UInt) = d.slice(from.toInt() until to.toInt())
 }
