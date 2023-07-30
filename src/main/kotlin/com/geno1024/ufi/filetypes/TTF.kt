@@ -88,13 +88,13 @@ object TTF : UFI
         data class CommonTable(var bytes: List<Byte>) : ITable
 
         /**
-         * [The 'head' table](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html)
+         * [Font Header Table](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6head.html)
          */
         data class HeadTable(
             /**
              * 0x00010000 if (version 1.0)
              */
-            var version: UInt = 0U,
+            var version: UInt = 0x00010000U,
             /**
              * set by font manufacturer
              */
@@ -344,6 +344,105 @@ object TTF : UFI
             }
         }
 
+        /**
+         * [Horizontal Header Table](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hhea.html)
+         */
+        data class HheaTable(
+            /**
+             * 0x00010000 (1.0)
+             */
+            var version: UInt = 0x00010000U,
+            /**
+             * Distance from baseline of highest ascender
+             */
+            var ascent: Short = 0,
+            /**
+             * Distance from baseline of lowest descender
+             */
+            var descent: Short = 0,
+            /**
+             * typographic line gap
+             */
+            var lineGap: Short = 0,
+            /**
+             * must be consistent with horizontal metrics
+             */
+            var advanceWidthMax: UShort = 0U,
+            /**
+             * must be consistent with horizontal metrics
+             */
+            var minLeftSideBearing: Short = 0,
+            /**
+             * must be consistent with horizontal metrics
+             */
+            var minRightSideBearing: Short = 0,
+            /**
+             * max(lsb + (xMax-xMin))
+             */
+            var xMaxExtent: Short = 0,
+            /**
+             * used to calculate the slope of the caret (rise/run) set to 1 for vertical caret
+             */
+            var caretSlopeRise: Short = 0,
+            /**
+             * 0 for vertical
+             */
+            var caretSlopeRun: Short = 0,
+            /**
+             * set value to 0 for non-slanted fonts
+             */
+            var caretOffset: Short = 0,
+            /**
+             * set value to 0
+             */
+            var reserved0: Short = 0,
+            /**
+             * set value to 0
+             */
+            var reserved1: Short = 0,
+            /**
+             * set value to 0
+             */
+            var reserved2: Short = 0,
+            /**
+             * set value to 0
+             */
+            var reserved3: Short = 0,
+            /**
+             * 0 for current format
+             */
+            var metricDataFormat: Short = 0,
+            /**
+             * number of advance widths in metrics table
+             */
+            var numOfLongHorMetrics: UShort = 0U
+        ) : ITable
+        {
+            companion object
+            {
+                fun from(bytes: List<Byte>): HheaTable = HheaTable().apply {
+                    val bs = ByteStream(bytes.toByteArray())
+                    version = bs.readU4BE()
+                    ascent = bs.readS2BE()
+                    descent = bs.readS2BE()
+                    lineGap = bs.readS2BE()
+                    advanceWidthMax = bs.readU2BE()
+                    minLeftSideBearing = bs.readS2BE()
+                    minRightSideBearing = bs.readS2BE()
+                    xMaxExtent = bs.readS2BE()
+                    caretSlopeRise = bs.readS2BE()
+                    caretSlopeRun = bs.readS2BE()
+                    caretOffset = bs.readS2BE()
+                    reserved0 = bs.readS2BE()
+                    reserved1 = bs.readS2BE()
+                    reserved2 = bs.readS2BE()
+                    reserved3 = bs.readS2BE()
+                    metricDataFormat = bs.readS2BE()
+                    numOfLongHorMetrics = bs.readU2BE()
+                }
+            }
+        }
+
         enum class PredefinedTable(val tag: String)
         {
             ACNT("acnt"),
@@ -427,6 +526,7 @@ object TTF : UFI
             tables[tableDirectory.tag] = when (Struct.PredefinedTable.fromValue(tableDirectory.tag))
             {
                 Struct.PredefinedTable.HEAD -> Struct.HeadTable.from(tableBytes)
+                Struct.PredefinedTable.HHEA -> Struct.HheaTable.from(tableBytes)
                 else -> Struct.CommonTable(tableBytes)
             }
         }
