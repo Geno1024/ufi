@@ -444,6 +444,42 @@ object TTF : UFI
         }
 
         /**
+         * [Horizontal Metrics Table](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html)
+         */
+        data class HmtxTable(
+            /**
+             * The value numOfLongHorMetrics comes from the ['hhea'](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hhea.html) table. If the font is monospaced, only one entry need be in the array but that entry is required.
+             */
+            var hMetrics: MutableList<LongHorMetric> = mutableListOf(),
+            /**
+             * Here the advanceWidth is assumed to be the same as the advanceWidth for the last entry above. The number of entries in this array is derived from the total number of glyphs minus numOfLongHorMetrics. This generally is used with a run of monospaced glyphs (e.g. Kanji fonts or Courier fonts). Only one run is allowed and it must be at the end.
+             */
+            var leftSideBearing: MutableList<Short> = mutableListOf()
+        ) : ITable
+        {
+            data class LongHorMetric(
+                var advanceWidth: UShort,
+                var leftSideBearing: Short
+            )
+
+            companion object
+            {
+                fun from(maxpTable: MaxpTable, hheaTable: HheaTable, bytes: List<Byte>): HmtxTable = HmtxTable().apply {
+                    val fr = ByteStream(bytes.toByteArray())
+                    repeat(hheaTable.numOfLongHorMetrics.toInt()) {
+                        hMetrics.add(LongHorMetric(
+                            advanceWidth = fr.readU2BE(),
+                            leftSideBearing = fr.readS2BE()
+                        ))
+                    }
+                    repeat((maxpTable.numGlyphs - hheaTable.numOfLongHorMetrics).toInt()) {
+                        leftSideBearing.add(fr.readS2BE())
+                    }
+                }
+            }
+        }
+
+        /**
          * [Maximum Profile Table](https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6maxp.html)
          */
         data class MaxpTable(
@@ -613,16 +649,19 @@ object TTF : UFI
                 )
             )
         }
-        fontDirectory.tableDirectories.forEach { tableDirectory ->
-            val tableBytes = fr.range(tableDirectory.offset, tableDirectory.offset + tableDirectory.length)
-            tables[tableDirectory.tag] = when (Struct.PredefinedTable.fromValue(tableDirectory.tag))
-            {
-                Struct.PredefinedTable.HEAD -> Struct.HeadTable.from(tableBytes)
-                Struct.PredefinedTable.HHEA -> Struct.HheaTable.from(tableBytes)
-                Struct.PredefinedTable.MAXP -> Struct.MaxpTable.from(tableBytes)
-                else -> Struct.CommonTable(tableBytes)
+        fontDirectory.tableDirectories
+            .sortedBy(Struct.FontDirectory.TableDirectoryEntry::offset)
+            .forEach { tableDirectory ->
+                val tableBytes = fr.range(tableDirectory.offset, tableDirectory.offset + tableDirectory.length)
+                tables[tableDirectory.tag] = when (Struct.PredefinedTable.fromValue(tableDirectory.tag))
+                {
+                    Struct.PredefinedTable.HEAD -> Struct.HeadTable.from(tableBytes)
+                    Struct.PredefinedTable.HHEA -> Struct.HheaTable.from(tableBytes)
+                    Struct.PredefinedTable.HMTX -> Struct.HmtxTable.from(getTableByTag(Struct.PredefinedTable.MAXP) as Struct.MaxpTable, getTableByTag(Struct.PredefinedTable.HHEA) as Struct.HheaTable, tableBytes)
+                    Struct.PredefinedTable.MAXP -> Struct.MaxpTable.from(tableBytes)
+                    else -> Struct.CommonTable(tableBytes)
+                }
             }
-        }
     }
 
     override fun serialize(struct: UFI.Struct): ByteArray
