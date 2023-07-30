@@ -9,8 +9,11 @@ object Tester
     fun main(args: Array<String>)
     {
         TTF.deserialize(File("./test/arial.ttf")).apply {
-//            println(this)
-            tables.forEach { (name, table) -> println(name) }
+            println(fontDirectory.tableDirectories)
+            tables.forEach { (name, table) -> println("$name ${table.javaClass}") }
+        }
+        TTF.deserialize(File("./test/arialbd.ttf")).apply {
+            tables.forEach { (name, table) -> println("$name ${table.javaClass}") }
         }
     }
 }
