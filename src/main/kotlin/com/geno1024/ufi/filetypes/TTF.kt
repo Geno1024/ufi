@@ -6,11 +6,9 @@ import java.io.File
 
 object TTF : UFI
 {
-    override val mime: String
-        get() = TODO("Not yet implemented")
+    override val mime: String = "font/sfnt"
     override val extension: String = "ttf"
-    override val ds: Struct
-        get() = TODO("Not yet implemented")
+    override val ds: Struct = Struct()
 
     data class Struct(
         var fontDirectory: FontDirectory = FontDirectory(),

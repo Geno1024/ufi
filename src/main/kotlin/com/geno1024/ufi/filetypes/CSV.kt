@@ -5,6 +5,10 @@ import java.io.File
 
 object CSV : UFI
 {
+    override val mime: String = "text/csv"
+    override val extension: String = "csv"
+    override val ds: Struct = Struct()
+
     data class Struct(
         var rows: MutableList<Row> = mutableListOf(Row())
     ) : UFI.Struct
@@ -18,10 +22,6 @@ object CSV : UFI
             )
         }
     }
-
-    override val mime: String = "text/csv"
-    override val extension: String = "csv"
-    override val ds: Struct = Struct()
 
     var cellSeparator = ','
     var rowSeparator = '\n'

@@ -6,6 +6,11 @@ import java.util.regex.Pattern
 
 object INI : UFI
 {
+    override val mime: String
+        get() = TODO("Not yet implemented")
+    override val extension: String = "ini"
+    override val ds: Struct = Struct()
+
     data class Struct(
         var sections: MutableList<Section> = mutableListOf()
     ) : UFI.Struct
@@ -13,15 +18,8 @@ object INI : UFI
         data class Section(
             var name: String = "",
             var kvp: MutableMap<String, String> = mutableMapOf()
-        ) {
-        }
+        )
     }
-
-    override val mime: String
-        get() = TODO("Not yet implemented")
-    override val extension: String = "ini"
-    override val ds: Struct
-        get() = TODO("Not yet implemented")
 
     override fun deserialize(file: File): Struct = Struct().apply {
         file.readLines().filter { line ->
