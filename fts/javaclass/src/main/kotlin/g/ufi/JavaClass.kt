@@ -26,7 +26,7 @@ data class JavaClass(
     var methods: MutableList<Method> = mutableListOf(),
     var attributesCount: UShort = 0U,
     var attributes: MutableList<Attribute> = mutableListOf()
-): UFI
+): S
 {
     companion object
     {

@@ -56,7 +56,7 @@ class HTTP
         }
     }
 
-    abstract class Body : UFI
+    abstract class Body : S
     {
         companion object
         {
@@ -129,7 +129,7 @@ class HTTP
         var version: Version = Version.HTTP11,
         var headers: MutableMap<String, MutableList<String>> = mutableMapOf(),
         var body: Body = Body.PlainContent()
-    ) : UFI
+    ) : S
     {
         companion object
         {
@@ -191,7 +191,7 @@ class HTTP
         var message: String = "",
         var headers: MutableMap<String, MutableList<String>> = mutableMapOf(),
         var body: Body = Body.PlainContent()
-    ) : UFI
+    ) : S
     {
         companion object
         {

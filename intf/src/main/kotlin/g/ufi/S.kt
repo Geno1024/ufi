@@ -3,8 +3,11 @@ package g.ufi
 import java.io.InputStream
 import java.io.OutputStream
 
-interface UFI
+/**
+ * Stream
+ */
+interface S
 {
     fun write(output: OutputStream)
-    fun read(input: InputStream): UFI
+    fun read(input: InputStream): S
 }
