@@ -7,7 +7,7 @@ dependencyResolutionManagement {
     }
 }
 
-//include(":intf")
+include(":intf")
 //include(":util")
 //File("fts").listFiles()?.filter(File::isDirectory)?.forEach {
 //    include(":fts:${it.name}")
